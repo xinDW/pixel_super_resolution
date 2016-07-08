@@ -37,9 +37,6 @@ if flag_is_separable == 1
     disp('convolution kernel separable');
 end
 
-pSize = paddedSize(size(X),  size(psf));
-% H = fft2(psf, pSize(1), pSize(2));
-
 tic;
 while iter < max_iter
     
@@ -48,38 +45,16 @@ while iter < max_iter
     
     for i=1:length(lr)
         temp = shift(X, (enhanfactor * lr_shift(i,2)), (enhanfactor * lr_shift(i,1)));
-       %% Spatial Separable Filter 
-       %         if flag_is_separable == 1
-       %             temp = imfilter(temp,psf_col);
-       %             temp = imfilter(temp,psf_row);
-       %         else
-       %             temp = imfilter(temp, psf);
-       %         end
-       %% Spatial Domian Filter
-        % temp = conv2(temp,psf,'same');
-        %temp = imfilter(temp, psf);
-        %temp = filter2(psf,temp);
-        
-       %% Frequency Domain Filter
-%         T = fft2(temp,pSize(1),pSize(2));
-%         F = T .* H;
-%         temp = ifft2(F);
-%         temp = temp(1:size(X,1), 1:size(X,2));
-
         temp = imfilter(temp, psf);
         temp = temp(1:enhanfactor:end, 1:enhanfactor:end);
-        %temp = downsample(temp,factor)';
-        %temp = downsample(temp,factor)';
         temp = temp - lr{i};
         temp = imresize(temp, enhanfactor, 'bicubic');
         temp = imfilter(temp,sharpen);
-        %temp = filter2(sharpen,temp);
         G(:,:,i) = shift(temp, -(enhanfactor * lr_shift(i,2)), -(enhanfactor * lr_shift(i,1)));
     end
     % Take the median of G, element by element
     M = median(G, 3);
-    %M = mean(G,3);
-    
+   
    %% BTV regularization
     %      for l = -p:p
     %          for m = 0:p
@@ -92,7 +67,6 @@ while iter < max_iter
     % Now that we have the median, we will go in its direction with a step
     % size of beta
     X = X - beta * (M+lambda* gamma); % add regularization (BTV)
-    %X = X - beta * M;% without regularization
     
     disp(['--------',num2str(iter),'----------']);
     
