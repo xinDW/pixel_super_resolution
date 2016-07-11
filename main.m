@@ -19,11 +19,11 @@ end
 lrPixelSize = ccd_size / mag_factor;
 scan_angle = deg2rad(scan_angle);
 
-% each lr shift in micron
+% lr shift in micron
 x_step = cos(scan_angle) * step;
 y_step = sin(scan_angle) * step;
 
-% each lr shift in pixel
+% lr shift in pixel
 xStepInPixel = x_step/lrPixelSize;
 yStepInPixel = y_step/lrPixelSize;
 
@@ -32,18 +32,8 @@ y_shift = [0:yStepInPixel:(lr_num* yStepInPixel)]';
 
 lr_shift = [x_shift,y_shift];
 
-lr_shift = zeros(lr_num, 2);
-for i = 1 : 8
-    for j = 1 : 8
-        lr_shift((i-1)*8 + j ,1) = (i - 1) * 1/8;
-        lr_shift((i - 1)*8 + j, 2) = (j - 1) * 1/8;
-    end
-end 
 %generator psf
-
-%[psf_lr,psf_hr] = generatePSF(ccd_size,mag_factor,NA,enhan_factor);
-psf_hr = [0 1 0 ; 1 2 1 ; 0 1 0];
-psf_hr = psf_hr / sum(psf_hr(:));
+[psf_lr,psf_hr] = generatePSF(ccd_size,mag_factor,NA,enhan_factor);
 
 switch algo 
     case 1
@@ -56,7 +46,7 @@ switch algo
         algoname = 'shift and add + deconvlution'
         hr = shiftAndAdd(lr, lr_shift, enhan_factor,psf_hr);
 end
-hr = hr * 65535 / max(hr(:));
+hr = hr / max(hr(:)) * 65535 ;
 hr = uint16(hr);
 
 
