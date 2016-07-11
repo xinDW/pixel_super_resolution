@@ -49,7 +49,7 @@ while iter < max_iter
         temp = temp(1:enhanfactor:end, 1:enhanfactor:end);
         temp = temp - lr{i};
         temp = imresize(temp, enhanfactor, 'bicubic');
-        temp = imfilter(temp,sharpen);
+        temp = deconvlucy(temp, psf, 5);
         G(:,:,i) = shift(temp, -(enhanfactor * lr_shift(i,2)), -(enhanfactor * lr_shift(i,1)));
     end
     % Take the median of G, element by element
