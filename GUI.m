@@ -306,7 +306,7 @@ extra_info = get(handles.et_extrainfo,'String');
         extra_info = ['_' extra_info];            
 end
 
-ccdSize = str2double(ccdSize);
+ccdSize = str2double(ccdSize); % git test
 magFactor = str2double(magFactor);
 NA = str2double(NA);
 enhanFactor = str2double(enhanFactor);
